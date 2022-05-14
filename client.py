@@ -1,7 +1,8 @@
 import pygame
 from network import Network
-import pickle
+from pygame import mixer
 pygame.font.init()
+mixer.init()
 
 width = 700
 height = 700
@@ -35,7 +36,6 @@ class Button:
 
 def redrawWindow(win, game, p):
     win.fill((128,128,128))
-
     if not(game.connected()):
         font = pygame.font.SysFont("comicsans", 80)
         text = font.render("Waiting for Player...", 1, (255,0,0), True)
@@ -43,13 +43,13 @@ def redrawWindow(win, game, p):
     else:
         font = pygame.font.SysFont("comicsans", 60)
 
-        sum = font.render("The prize is " + str(game.prize) + "$", 1, (0, 255,255))
+        sum = font.render("The prize is " + str(game.prize) + "$", 1, (255, 255,255))
         win.blit(sum, (width/2 - sum.get_width()/2, 100))
 
-        text = font.render("Your Move", 1, (0, 255,255))
+        text = font.render("Your Move", 1, (255, 255,255))
         win.blit(text, (80, 200))
 
-        text = font.render("Opponents", 1, (0, 255, 255))
+        text = font.render("Opponents", 1, (255, 255, 255))
         win.blit(text, (380, 200))
 
         move1 = game.get_player_move(0)
@@ -84,7 +84,6 @@ def redrawWindow(win, game, p):
 
     pygame.display.update()
 
-
 btns = [Button("Split", width/3 - 150, 500, (255,223,0)), Button("Take", 2*width/3, 500, (255,0,0))]
 def main():
     run = True
@@ -115,15 +114,19 @@ def main():
             font = pygame.font.SysFont("comicsans", 90)
             if (game.winner() == 1 and player == 1) or (game.winner() == 0 and player == 0):
                 text = font.render("You Won the money!", 1, (255,0,0))
+                mixer.music.load("win.mp3")       
             elif game.winner() == -1:
                 text = font.render("You both Lost the money!", 1, (255,0,0))
+                mixer.music.load("lose.wav")
             elif (game.winner() == 1 and player == 0) or (game.winner() == 0 and player == 1):
                 text = font.render("You lost the money", 1, (255, 0, 0))
+                mixer.music.load("lose.wav")
             else:
                 text = font.render("You split the money", 1, (255, 0, 0))
-
+                mixer.music.load("win.mp3")
             win.blit(text, (width/2 - text.get_width()/2, height/2 - text.get_height()/2))
             pygame.display.update()
+            mixer.music.play()
             run = False
             pygame.time.delay(3500)
 
